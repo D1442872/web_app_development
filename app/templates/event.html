@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h2 class="card-title fw-bold text-primary">{{ event.title }}</h2>
+                <hr>
+                <div class="mb-4">
+                    <p class="mb-1"><i class="bi bi-calendar text-muted"></i> <strong>時間：</strong>{{ event.event_date }}</p>
+                    <p class="mb-1"><i class="bi bi-geo-alt text-muted"></i> <strong>地點：</strong>{{ event.location }}</p>
+                </div>
+                <h5 class="mt-4 fw-bold">活動詳情</h5>
+                <p class="card-text mt-3" style="white-space: pre-line; line-height: 1.8;">{{ event.description }}</p>
+                
+                <div class="alert alert-secondary mt-5" role="alert">
+                    <h6 class="alert-heading fw-bold">ℹ️ 名額資訊</h6>
+                    <hr>
+                    <p class="mb-0">名額上限：<strong>{{ event.capacity }}</strong> 人</p>
+                    <small class="text-muted">※ 若報名人數超過上限，系統將自動將您排入候補名單，遞補成功將另行通知。</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-primary">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="mb-0 fw-bold">我要報名</h5>
+            </div>
+            <div class="card-body p-4">
+                <form action="{{ url_for('user.register', id=event.id) }}" method="POST">
+                    <div class="mb-3">
+                        <label for="student_id" class="form-label fw-bold">學號 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="student_id" name="student_id" placeholder="例如：110123456" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-bold">姓名 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="請填寫真實姓名" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="phone" class="form-label fw-bold">連絡電話 <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="phone" name="phone" placeholder="例如：0912345678" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">送出報名表</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

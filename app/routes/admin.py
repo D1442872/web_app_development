@@ -1,24 +1,26 @@
-from flask import Blueprint
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from app.models.db_models import Event
 
 admin_bp = Blueprint('admin', __name__)
 
 @admin_bp.route('/events/new', methods=['GET', 'POST'])
 def create_event():
-    """
-    建立活動專頁
-    
-    GET: 顯示建立活動的表單。
-    POST: 接收表單並建立新活動寫入資料庫。
-    
-    表單參數 (POST):
-        title (str): 活動名稱
-        description (str): 活動描述
-        event_date (str): 活動時間
-        location (str): 活動地點
-        capacity (int): 名額上限
+    if request.method == 'POST':
+        title = request.form.get('title')
+        description = request.form.get('description')
+        event_date = request.form.get('event_date')
+        location = request.form.get('location')
+        capacity = request.form.get('capacity')
         
-    回傳：
-        GET: 渲染 create.html
-        POST: 成功後重導向至首頁 (/)，並顯示 flash() 提示。
-    """
-    pass
+        if not title or not event_date or not location or not capacity:
+            flash("請填寫所有必填欄位", "danger")
+            return render_template('create.html')
+            
+        try:
+            Event.create(title, description, event_date, location, int(capacity))
+            flash("活動建立成功！", "success")
+            return redirect(url_for('events.index'))
+        except Exception as e:
+            flash(f"建立活動時發生錯誤: {str(e)}", "danger")
+            
+    return render_template('create.html')

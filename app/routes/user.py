@@ -1,40 +1,39 @@
-from flask import Blueprint
+from flask import Blueprint, render_template, request, redirect, url_for, flash
+from app.models.db_models import Registration
 
 user_bp = Blueprint('user', __name__)
 
 @user_bp.route('/event/<int:id>/register', methods=['POST'])
 def register(id):
-    """
-    送出活動報名
+    student_id = request.form.get('student_id')
+    name = request.form.get('name')
+    phone = request.form.get('phone')
     
-    處理學生報名資料，判斷是否額滿，若額滿則設為「候補中」，否則「成功」。
-    完成後使用 flash() 提示訊息並重導向。
-    
-    參數：
-        id (int): 活動的唯一識別碼
+    if not student_id or not name or not phone:
+        flash("請填寫所有報名資訊", "danger")
+        return redirect(url_for('events.event_detail', id=id))
         
-    表單參數：
-        student_id (str): 學號
-        name (str): 姓名
-        phone (str): 連絡電話
+    try:
+        reg_id, status = Registration.create(id, student_id, name, phone)
+        if status == '成功':
+            flash("報名成功！", "success")
+        else:
+            flash("活動已額滿，您已自動排入候補名單！", "warning")
+    except Exception as e:
+        flash(f"報名發生錯誤: {str(e)}", "danger")
         
-    回傳：
-        重導向回活動詳細頁面 (/event/<id>)
-    """
-    pass
+    return redirect(url_for('events.event_detail', id=id))
 
 @user_bp.route('/status', methods=['GET', 'POST'])
 def status_search():
-    """
-    報名進度查詢
-    
-    GET: 顯示輸入學號的查詢表單。
-    POST: 接收學號，查詢該學號所有報名紀錄與狀態並顯示。
-    
-    表單參數 (POST):
-        student_id (str): 學號
-        
-    回傳：
-        渲染 search.html。如果是 POST，則傳遞 registrations 查詢結果
-    """
-    pass
+    registrations = None
+    if request.method == 'POST':
+        student_id = request.form.get('student_id')
+        if not student_id:
+            flash("請輸入學號", "warning")
+        else:
+            registrations = Registration.get_by_student(student_id)
+            if not registrations:
+                flash("查無此學號的報名紀錄", "info")
+                
+    return render_template('search.html', registrations=registrations)

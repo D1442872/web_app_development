@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2>所有活動</h2>
+        <p class="text-muted">瀏覽並報名目前開放的各項活動</p>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for event in events %}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title text-primary fw-bold">{{ event.title }}</h5>
+                <h6 class="card-subtitle mb-3 text-muted">
+                    <small>📅 {{ event.event_date }}</small><br>
+                    <small>📍 {{ event.location }}</small>
+                </h6>
+                <p class="card-text text-truncate">{{ event.description }}</p>
+            </div>
+            <div class="card-footer bg-transparent border-top-0 pb-3">
+                <a href="{{ url_for('events.event_detail', id=event.id) }}" class="btn btn-outline-primary w-100">查看詳情 / 報名</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info">目前沒有任何活動，請主辦單位新增活動。</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
